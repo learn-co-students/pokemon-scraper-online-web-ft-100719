@@ -1,20 +1,22 @@
 class Pokemon
 
-    attr_accessor :id, :name, :type, :db
+    attr_accessor :name, :type, :db, :id
 
-    def initialize(name)
-        @name = name
-        @id = id 
-        @type = type
-    end 
+  def initialize (id: nil, name:, type:, db:)
+    @id = id
+    @name = name
+    @type = type
+    @db = db
+  end
 
-    def save
-        sql = <<-SQL 
-        INSERT INTO pokemon (name, type, db)
-        VALUES (?, ?, ?)
-        SQL
+  def self.save(name, type, db)
+    sql = "INSERT INTO pokemon (name, type) VALUES (?, ?)"
+    db.execute(sql, name, type)
+  end
 
-        DB[:conn].execute(sql, self.name, self.type, self.db)
-        @id = BD[:conn].execute("SELECT last_insert_rowid()) FROM pokemon")[0][0][0]
-    end 
+  def self.find(id, db)
+    sql = "SELECT * FROM pokemon WHERE id = ?"
+    pokemon = db.execute(sql, id)[0]
+    pokemon1 = Pokemon.new(id: pokemon[0], name: pokemon[1], type: pokemon[2], db: db)
+  end
 end
